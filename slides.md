@@ -21,8 +21,6 @@ canvasWidth: 784
 
 # 用户与用户组
 
-<div class="grid grid-cols-2 gap-4 mt-10">
-<div>
 
 ### 为什么需要“用户”？
 
@@ -30,14 +28,7 @@ canvasWidth: 784
 - **资源管理**：限制不同用户使用的磁盘空间、内存等
 - **安全审计**：追踪是谁执行了操作
 
-</div>
-<div class="flex items-center justify-center opacity-80">
-<svg width="150" height="150" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-  <circle cx="12" cy="7" r="4" />
-  <path d="M5.5 21v-2a4 4 0 0 1 4-4h5a4 4 0 0 1 4 4v2" />
-</svg>
-</div>
-</div>
+
 
 ---
 
@@ -195,17 +186,16 @@ me adm cdrom sudo dip plugdev users lpadmin docker
 
 ---
 
-# [adduser]{.font-mono} [(Debian)]{.text-2xl!}
+# [adduser]{.font-mono}
 
-简单配置用户
+简单配置用户 (Debian)
 
 ```console
 $ sudo adduser 用户名
 $ sudo adduser --group 组名
-$ sudo adduser 用户名 组名  # adduser me sudo
+$ sudo adduser 用户名 组名
 ```
 
-为什么我的系统里没有这条命令？
 更多需求？ => usermod, useradd, groupadd
 
 ---
@@ -221,7 +211,7 @@ drwxrwxr-x 2 me me 4096 Feb 3 22:38 a_folder
 -rwxrw-r-- 1 me me   40 Feb 3 22:37 a_file
 ```
 
-<svg width="1000" height="100" viewBox="0 0 1000 100" class="font-mono">
+<svg width="600" height="80" viewBox="0 0 600 100" class="font-mono ml--16">
   <!-- Type -->
   <rect x="10" y="10" width="40" height="40" fill="#eee" stroke="#333" />
   <text x="30" y="35" text-anchor="middle">-</text>
@@ -258,13 +248,11 @@ drwxrwxr-x 2 me me 4096 Feb 3 22:38 a_folder
   <text x="600" y="70" text-anchor="middle" font-size="4">所属组</text>
 </svg>
 
-<div class="flex gap-8 text-sm">
-<div>
+<div class="text-xs mt--2 ml-1">
 
 ##### 文件类型
 
-
-<div class="grid grid-cols-2 gap-4">
+<div class="flex gap-4">
 <div>
 
 - **-**: 普通文件
@@ -282,15 +270,6 @@ drwxrwxr-x 2 me me 4096 Feb 3 22:38 a_folder
 </div>
 </div>
 
-</div>
-<div>
-
-##### 权限字符
-- **r**: 读
-- **w**: 写
-- **x**: 执行
-
-</div>
 </div>
 
 ---
@@ -373,7 +352,7 @@ chown -R user:group directory/
 
 # chgrp
 
-**Ch**ange **Grp** - 仅修改所属组
+**Ch**ange **Gr**ou**p** - 仅修改所属组
 
 ```bash
 chgrp group file.txt
@@ -387,60 +366,46 @@ chgrp group file.txt
 
 Linux 的目录结构是一棵树，从根目录 `/` 开始。
 
-<div class="flex justify-center mt-4">
-<svg width="400" height="200" viewBox="0 0 400 200" fill="none" stroke="currentColor" stroke-width="2">
-  <circle cx="200" cy="20" r="15" fill="#fff"/>
-  <text x="200" y="25" text-anchor="middle" stroke="none" fill="black">/</text>
-  
-  <path d="M200 35 L100 80" />
-  <path d="M200 35 L150 80" />
-  <path d="M200 35 L200 80" />
-  <path d="M200 35 L250 80" />
-  <path d="M200 35 L300 80" />
+<img src="./assets/fhs.svg" mb-4 />
 
-  <text x="100" y="100" text-anchor="middle" stroke="none" fill="black" font-size="4">bin</text>
-  <text x="150" y="100" text-anchor="middle" stroke="none" fill="black" font-size="4">etc</text>
-  <text x="200" y="100" text-anchor="middle" stroke="none" fill="black" font-size="4">home</text>
-  <text x="250" y="100" text-anchor="middle" stroke="none" fill="black" font-size="4">var</text>
-  <text x="300" y="100" text-anchor="middle" stroke="none" fill="black" font-size="4">usr</text>
-</svg>
-</div>
-
-文件系统层次结构标准 FHS (Filesystem Hierarchy Standard)
-https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html
-man hier
-man file-hierarchy
+> 文件系统层次结构标准 FHS (Filesystem Hierarchy Standard)
+> https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html
+>
+> ```
+> man hier
+> man file-hierarchy
+> ```
 
 ---
 
-<FHSDir path="/bin" title="Binaries (-> /usr/bin)">
+<FHSDir path="/bin" title="Binaries (➝ /usr/bin)">
   程序文件，对所有用户都可用。如 cat, ls, cp, su
 </FHSDir>
 
-<FHSDir path="/sbin" title="System binaries (-> /usr/sbin)">
+<FHSDir path="/sbin" title="System binaries (➝ /usr/sbin)">
   系统管理，以及仅用于 root 用户的程序。如 fsck, reboot
 </FHSDir>
 
 <FHSDir path="/etc" title="Configuration">
   系统级配置。一些典型的文件：
 
-- passwd, shadow, sudoers
-- resolv.conf: 系统 DNS 服务器配置
-- hosts: 主机名和 IP 地址的对应表
-- apt/sources.list: (Debian/Ubuntu) 系统软件源
+- `/etc/{passwd,shadow,sudoers}`
+- `/etc/resolv.conf`: 系统 DNS 服务器配置
+- `/etc/hosts`: 主机名和 IP 地址的对应表
+- `/etc/apt/sources.list.d/ubuntu.sources`: Ubuntu 系统软件源
 </FHSDir>
 
 ---
 
 <FHSDir path="/root" title="Root user home directory">
-  超级用户家目录
+超级用户家目录
 </FHSDir>
 
 <FHSDir path="/home" title="Home directory of normal users">
-  普通用户家目录：<code>/home/username</code>
+普通用户家目录：<code>/home/username</code>
 </FHSDir>
 
-<FHSDir path="/lib" title="Libraries (-> /usr/lib)">
+<FHSDir path="/lib" title="Libraries (➝ /usr/lib)">
 存放系统运行所需的程序库文件<br>
 一些典型的文件：
 
