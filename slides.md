@@ -6,6 +6,8 @@ transition: slide-left
 mdc: true
 colorSchema: light
 canvasWidth: 784
+addons:
+  - slidev-addon-shell
 ---
 
 <div text-left>
@@ -21,13 +23,41 @@ canvasWidth: 784
 
 # 用户与用户组
 
+<div />
 
-### 为什么需要“用户”？
+只有我一个人使用电脑，为什么还要有「用户」和「用户权限」的概念？
 
-- **权限隔离**：防止一个用户破坏系统或其他用户的文件
-- **资源管理**：限制不同用户使用的磁盘空间、内存等
-- **安全审计**：追踪是谁执行了操作
+<carbon-arrow-down />
 
+古老的操作系统：没有用户概念 / 没有权限管理
+
+<carbon-arrow-down />
+
+现代操作系统：用户与权限严格隔离
+
+---
+layout: two-cols
+layoutClass: gap-4
+---
+
+### 服务器场景{.text-primary.mb-4}
+
+- 张三: 管理员
+- 李四: 数据库管理员
+- 王五: 普通用户
+
+- www-data 用户: 运行 Web 服务器
+- mysql 用户: 运行数据库服务
+
+::right::
+
+### 个人电脑场景 (Windows){.text-primary.mb-4}
+
+- 你: （唯一）使用者
+
+- <span text-nowrap>Administrator: 安装软件、修改系统配置</span>
+- System: 最高权限用户
+- TrustedInstaller: 安装系统组件
 
 
 ---
@@ -51,9 +81,7 @@ mysql:x:111:116:MySQL Server,,,:/nonexistent:/bin/false
 <span class="text-red-600">用户名</span>:<span class="text-gray-400">密码占位</span>:<span class="text-blue-600">UID</span>:<span class="text-green-600">GID</span>:<span class="text-purple-600">描述</span>:<span class="text-orange-600">家目录</span>:<span class="text-teal-600">Shell</span>
 </div>
 
-
-
-<div class="mt-4 text-xs opacity-60">
+<div class="mt-4 text-sm opacity-60 ml-2px">
 注：用户密码哈希实际存储在 <code>/etc/shadow</code> (仅 root 可读)
 </div>
 
@@ -62,7 +90,9 @@ mysql:x:111:116:MySQL Server,,,:/nonexistent:/bin/false
 # root 用户 (Superuser)
 
 - **权限最高**：可以对系统做任何操作（包括删除系统）。
+
 - **UID 为 0**：系统通过 UID=0 识别超级用户。
+
 - **家目录**：`/root` (不同于普通用户的 `/home`)
 
 ---
@@ -80,7 +110,10 @@ lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false
 mysql:x:111:116:MySQL Server,,,:/nonexistent:/bin/false
 ```
 
-- 运行后台服务 (Daemons) 如 `apache`, `mysql`, `docker`
+<div h-2 />
+
+- 运行后台服务 (Daemons) 
+
 - 隔离服务权限，如果服务被攻破，攻击者只能获得该服务的低权限
 
 ---
@@ -98,7 +131,10 @@ lxd:x:998:100::/var/snap/lxd/common/lxd:/bin/false
 mysql:x:111:116:MySQL Server,,,:/nonexistent:/bin/false
 ```
 
+<div h-2 />
+
 - 普通用户的家目录位于 `/home/username` 中
+
 - 无法直接修改系统配置，安装/卸载软件
 
 ---
@@ -113,9 +149,14 @@ mysql:x:111:116:MySQL Server,,,:/nonexistent:/bin/false
 </div>
 
 ```bash
-sudo ./program           # 以 root 的身份运行程序
-sudo -u nobody ./program # 以用户 nobody 的身份运行程序
-sudo !!                  # 以 root 的身份运行上一条命令
+# 以 root 的身份运行程序
+sudo ./program
+
+# 以用户 nobody 的身份运行程序
+sudo -u nobody ./program
+
+# 以 root 的身份运行上一条命令
+sudo !!
 ```
 
 配置文件：[/etc/sudoers]{.font-mono} （建议使用 `visudo` 命令编辑）
@@ -128,8 +169,6 @@ sudo !!                  # 以 root 的身份运行上一条命令
 
 <div class="grid grid-cols-2 gap-4">
 <div>
-
-
 
 ```console
 $ su
@@ -161,28 +200,20 @@ sudo su, sudo su -, sudo -i
 
 # 用户组
 
-- **逻辑集合**：将多个用户归为一个组，方便统一授权。
-- **多重身份**：一个用户可以属于一个**主组** (Primary Group) 和多个**附加组** (Secondary Groups)。
+- 用户的集合
+- 为一批用户设置权限
+- GID: 用户组 ID
 
-```console
+<div h-4 />
+
+```console {*}{class:'children:text-sm!'}
 $ groups
 me adm cdrom sudo dip plugdev users lpadmin docker
 ```
 
-<div class="grid grid-cols-3 gap-2 mt-4 text-sm">
-<div class="bg-blue-50 p-2 rounded">
-<span class="font-bold">sudo</span><br>
-允许使用 sudo 命令
-</div>
-<div class="bg-blue-50 p-2 rounded">
-<span class="font-bold">adm</span><br>
-允许查看系统日志
-</div>
-<div class="bg-blue-50 p-2 rounded">
-<span class="font-bold">docker</span><br>
-允许操作 Docker 容器
-</div>
-</div>
+- me: 用户的主组，与用户名相同
+- sudo: 允许使用 sudo 命令（根据[/etc/sudoers]{.font-mono}）
+- docker: 无须提权即可使用 Docker（安全性上等同于直接赋予该用户 root 权限）
 
 ---
 
@@ -190,7 +221,7 @@ me adm cdrom sudo dip plugdev users lpadmin docker
 
 简单配置用户 (Debian)
 
-```console
+```console {*}{class:'children:text-sm!'}
 $ sudo adduser 用户名
 $ sudo adduser --group 组名
 $ sudo adduser 用户名 组名
@@ -202,20 +233,21 @@ $ sudo adduser 用户名 组名
 
 # 文件权限
 
-Linux 中一切皆文件。每个文件都有特定的权限控制。
+<div />
 
-```console
+```console {*}{class:'children:text-sm!'}
 $ ls -l
 total 2 
 drwxrwxr-x 2 me me 4096 Feb 3 22:38 a_folder
 -rwxrw-r-- 1 me me   40 Feb 3 22:37 a_file
 ```
 
-<svg width="600" height="80" viewBox="0 0 600 100" class="font-mono ml--16">
+<svg width="600" height="80" viewBox="0 0 600 100" class="font-mono ml--16 mt-4">
   <!-- Type -->
   <rect x="10" y="10" width="40" height="40" fill="#eee" stroke="#333" />
   <text x="30" y="35" text-anchor="middle">-</text>
   <text x="30" y="70" text-anchor="middle" font-size="4">类型</text>
+  <text x="30" y="90" text-anchor="middle" font-size="8">↓</text>
 
   <!-- User -->
   <rect x="60" y="10" width="100" height="40" fill="#e0f2f1" stroke="#333" />
@@ -248,9 +280,7 @@ drwxrwxr-x 2 me me 4096 Feb 3 22:38 a_folder
   <text x="600" y="70" text-anchor="middle" font-size="4">所属组</text>
 </svg>
 
-<div class="text-xs mt--2 ml-1">
-
-##### 文件类型
+<div class="text-xs ml-1 bg-#eee w-fit px-2 py-1" border="#333 1">
 
 <div class="flex gap-4">
 <div>
@@ -276,15 +306,26 @@ drwxrwxr-x 2 me me 4096 Feb 3 22:38 a_folder
 
 # 权限的含义
 
-| 权限 | 对文件的含义 | 对目录的含义 |
+| **权限** | **对文件的含义** | **对目录的含义** |
 |---|---|---|
-| **r (Read)** | 查看文件内容 (`cat`) | 列出目录内容 (`ls`) |
+| **r (Read)** | 查看文件内容 | 列出目录内容 (`ls`) |
 | **w (Write)** | 修改文件内容 | 在目录中创建/删除文件 |
 | **x (Execute)** | 运行程序/脚本 | **进入**目录 (`cd`) |
+| **s (Setuid/Setgid)** | 以文件所有者/组的权限运行程序 | ... |
 
-<div class="mt-4 bg-yellow-50 p-3 text-sm border-l-4 border-yellow-400">
-注意：要读取目录下的文件，通常需要对该目录同时拥有 <b>r</b> (列出) 和 <b>x</b> (进入) 权限。
+<div text-xs mt-4 op-60>
+
+https://wiki.archlinux.org/title/File_permissions_and_attributes#Viewing_permissions
+
 </div>
+
+<style>
+
+.slidev-layout td, .slidev-layout th {
+  padding: 0.5rem;
+}
+
+</style>
 
 ---
 
@@ -295,27 +336,26 @@ drwxrwxr-x 2 me me 4096 Feb 3 22:38 a_folder
 <div class="grid grid-cols-2 gap-8">
 <div>
 
-### 符号模式 (Symbolic)
-`[u/g/o/a] [+/-/=] [r/w/x]`
+#### 符号模式 (Symbolic)
 
-```bash
-# 给所有者添加执行权限
-chmod u+x script.sh
+<span font-mono> \[u/g/o/a\] \[+/-/=\] \[r/w/x\] </span>
 
-# 移除其他人的写权限
+```bash {*}{class:'children:text-sm!'}
+chmod +x script.sh
+
 chmod o-w file.txt
 
-# 给所有人添加读权限
 chmod a+r file.txt
 ```
 
 </div>
 <div>
 
-### 数字模式 (Numeric)
-r=4, w=2, x=1
+#### 数字模式 (Numeric)
 
-```bash
+<span font-mono> r=4, w=2, x=1 </span>
+
+```bash {*}{class:'children:text-sm!'}
 # rwx r-x r-x
 # 7   5   5
 chmod 755 program
@@ -337,7 +377,7 @@ layoutClass: gap-8
 
 **Ch**ange **Own**er - 修改所有者
 
-```bash
+```bash {*}{class:'children:text-sm!'}
 # 修改文件所有者
 chown user file.txt
 
@@ -354,27 +394,32 @@ chown -R user:group directory/
 
 **Ch**ange **Gr**ou**p** - 仅修改所属组
 
-```bash
+```bash {*}{class:'children:text-sm!'}
 chgrp group file.txt
 ```
 
 ---
 
+# 更细节权限控制
+
+- ACL: 细粒度权限控制
+
+- File attributes: 只读、不可删除等
+
+- Capabilities: Root 权限的碎片化
+
+- MAC (SELinux / AppArmor): 强制访问控制
+
+- Seccomp: 系统调用防火墙
+
+---
+
 # 文件系统层次结构 (FHS)
 
-**F**ilesystem **H**ierarchy **S**tandard
+[**F**ilesystem **H**ierarchy **S**tandard](https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html)
 
-Linux 的目录结构是一棵树，从根目录 `/` 开始。
 
-<img src="./assets/fhs.svg" mb-4 />
-
-> 文件系统层次结构标准 FHS (Filesystem Hierarchy Standard)
-> https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html
->
-> ```
-> man hier
-> man file-hierarchy
-> ```
+<img src="./assets/fhs.svg" mb-4 pt-2 mx--4 h-60 />
 
 ---
 
@@ -471,7 +516,9 @@ WSL: <code>/mnt/c</code>, <code>/mnt/d</code> 等
 
 - `/dev/sda`: 第一块硬盘
 - `/dev/null`: 黑洞 (丢弃一切写入)
+  <span float-right translate-x-12 font-mono text-sm pt-2>command > /dev/null 2>&1</span>
 - `/dev/zero`: 产生无限的 0
+  <span float-right translate-x-12 font-mono text-sm pt-2>dd if=/dev/zero of=file bs=1M count=1024</span>
 - `/dev/urandom`: 随机数生成器
 
 </FHSDir>
@@ -501,7 +548,41 @@ WSL: <code>/mnt/c</code>, <code>/mnt/d</code> 等
 </FHSDir>
 
 ---
+layout: two-cols
+---
 
+# apt install 
+
+- 可执行程序 <carbon-arrow-right /> [/bin/]{.font-mono}
+- 配置文件 <carbon-arrow-right /> [/etc/]{.font-mono}
+- 库文件 <carbon-arrow-right /> [/lib/]{.font-mono}
+- 资源文件 <carbon-arrow-right /> [/usr/share/]{.font-mono}
+- 日志文件 <carbon-arrow-right /> [/var/log/]{.font-mono}
+- 数据文件 <carbon-arrow-right /> [/var/lib/]{.font-mono}
+
+::right::
+
+<div float-right>
+
+```bash {*}{class:'children:text-sm!'}
+$ dpkg -L nginx
+/.
+/usr
+/usr/sbin
+/usr/sbin/nginx
+/usr/share
+/usr/share/doc
+/usr/share/doc/nginx
+/usr/share/doc/nginx/changelog.Debian.gz
+/usr/share/doc/nginx/copyright
+/usr/share/man
+/usr/share/man/man8
+/usr/share/man/man8/nginx.8.gz
+```
+
+</div>
+
+---
 
 # 总结
 
