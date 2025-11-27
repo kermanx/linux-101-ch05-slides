@@ -187,14 +187,13 @@ $ sudo su -
 [sudo] password for me:
 #
 ```
-<div class="text-sm text-green-600 mt-2">
-推荐方式。保留了 sudo 的审计记录。
+
+<div class="text-sm text-green-600 mt-2 font-mono underline">
+sudo -i
 </div>
 
 </div>
 </div>
-
-sudo su, sudo su -, sudo -i
 
 ---
 
@@ -211,23 +210,32 @@ $ groups
 me adm cdrom sudo dip plugdev users lpadmin docker
 ```
 
-- me: 用户的主组，与用户名相同
-- sudo: 允许使用 sudo 命令（根据[/etc/sudoers]{.font-mono}）
-- docker: 无须提权即可使用 Docker（安全性上等同于直接赋予该用户 root 权限）
+<div>
+
+- [me]{.font-mono.text-blue-600}: [用户的主组，与用户名相同]{.text-base}
+- [sudo]{.font-mono.text-blue-600}: <span text-base>允许使用 sudo 命令（根据[/etc/sudoers]{.font-mono}）</span>
+- [docker]{.font-mono.text-blue-600}: <span text-base>无须提权即可使用 Docker（安全性上等同于直接赋予该用户 root 权限）</span>
+
+</div>
 
 ---
 
-# [adduser]{.font-mono}
+# 修改用户/用户组
 
-简单配置用户 (Debian)
+```bash {*}{class:'children:text-sm!'}
+adduser username    # 创建用户
+deluser username    # 删除用户
 
-```console {*}{class:'children:text-sm!'}
-$ sudo adduser 用户名
-$ sudo adduser --group 组名
-$ sudo adduser 用户名 组名
+groupadd groupname  # 创建用户组
+groupdel groupname  # 删除用户组
+
+usermod -aG groupname username  # 将用户添加到用户组
+usermod -rG groupname username  # 将用户从用户组移除
+
+passwd           # 修改自己的密码
+passwd username  # 修改指定用户的密码
 ```
 
-更多需求？ => usermod, useradd, groupadd
 
 ---
 

@@ -1,2 +1,7 @@
+packages:
+  - .
+  - slidev-addon-shell
+
 onlyBuiltDependencies:
   - esbuild
+  - node-pty-prebuilt-multiarch

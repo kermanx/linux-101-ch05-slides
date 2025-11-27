@@ -18,7 +18,7 @@ importers:
         specifier: latest
         version: 0.25.0
       slidev-addon-shell:
-        specifier: link:slidev-addon-shell
+        specifier: workspace:*
         version: link:slidev-addon-shell
       vue:
         specifier: ^3.5.24
